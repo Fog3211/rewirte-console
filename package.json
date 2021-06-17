@@ -1,0 +1,41 @@
+{
+  "name": "rewrite-console",
+  "version": "0.0.0",
+  "description": "A JavaScript library for rewriting console to filter output",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fog3211/filter-console.git"
+  },
+  "author": "Fog3211",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Fog3211/rewrite-console/issues"
+  },
+  "homepage": "https://github.com/Fog3211/rewrite-console#readme",
+  "type": "module",
+  "source": "src/index.ts",
+  "exports": "./dist/index.modern.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "start": "microbundle watch"
+  },
+  "devDependencies": {
+    "@types/node": "^15.12.2",
+    "@umijs/fabric": "^2.6.2",
+    "lint-staged": "^11.0.0",
+    "microbundle": "^0.13.3",
+    "prettier": "^2.3.1",
+    "typescript": "^4.3.3"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md,json}": [
+      "prettier --write"
+    ]
+  }
+}

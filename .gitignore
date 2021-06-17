@@ -1,0 +1,25 @@
+.idea
+.DS_Store
+*~
+~*
+
+.nyc_output
+.docz
+node_modules
+lib
+es
+dist
+build
+
+pnpm-lock.yaml
+package-lock.json
+# yarn.lock
+*.log
+
+.vscode
+
+# umi
+/src/.umi
+/src/.umi-production
+/src/.umi-test
+/.env.local

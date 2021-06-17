@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "**/__test__/",
+    "**/__stories__/",
+    "lib/",
+    "es/",
+    "dist/",
+    "build/",
+    "server/",
+    "demo/",
+    ".docz/",
+    ".storybook/",
+    ".out/",
+    "*.js",
+    "**/.umi/"
+  ],
+  "include": [
+    "./src"
+  ]
+}
