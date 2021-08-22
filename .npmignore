@@ -1,0 +1,11 @@
+.DS_Store
+node_modules
+src
+.idea
+.eslintignore
+.eslintrc.js
+tsconfig.json
+.gitignore
+.prettierrc.js
+.vscode
+example

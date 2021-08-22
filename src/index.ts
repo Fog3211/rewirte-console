@@ -24,6 +24,7 @@ const DefaultOptions = {
   strict: false,
   methods: []
 }
+const DefaultAvailableMethods: Method[] = ['debug', 'info', 'log', 'warn', 'error']
 class MyConsole {
   private _console: Console
   private _options: Options
@@ -63,12 +64,16 @@ class MyConsole {
   public filter(options: Options) {
     this._options = Object.assign({}, this._options, options)
     const { methods = [] } = this._options
-    const availableMethods: Method[] = methods.length === 0 ? ['debug', 'info', 'log', 'warn', 'error'] : methods
+    const availableMethods: Method[] = methods.length === 0 ? DefaultAvailableMethods : methods
 
-    availableMethods.forEach(method => {
-      window.console[method].prototype = () => {
-        this._console[method].apply(this._console, this.getArguments(arguments) as Arguments);
-      };
+    DefaultAvailableMethods.forEach(method => {
+      if (availableMethods.includes(method)) {
+        window.console[method].prototype = () => {
+          this._console[method].apply(this._console, this.getArguments(arguments) as Arguments);
+        };
+      } else {
+        window.console[method] = () => { }
+      }
     })
   }
   /** 重置console */
