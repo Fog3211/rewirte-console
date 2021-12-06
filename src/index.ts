@@ -10,8 +10,8 @@ export type Options = {
   include?: RegExp
   /** 排除规则 */
   exclude?: RegExp
-  /** 是否只针对字符串和数字类型 */
-  strict?: boolean
+  /** 是否匹配全部参数 */
+  global?: boolean
   /** 过滤等级 */
   methods?: Method[]
 }
@@ -21,58 +21,59 @@ export type Arguments = any[]
 const DefaultOptions = {
   include: new RegExp('[\s\S]*'),
   exclude: new RegExp(''),
-  strict: false,
+  global: false,
   methods: []
 }
 const DefaultAvailableMethods: Method[] = ['debug', 'info', 'log', 'warn', 'error']
 class MyConsole {
   private _console: Console
-  private _options: Options
-  private _trash: Arguments
+  private options: Options
+  private trash: Record<string, Arguments>[]
 
   constructor(options?: Options) {
     this._console = window.console
-    this._options = Object.assign({}, DefaultOptions, options)
-    this._trash = []
+    this.options = Object.assign({}, DefaultOptions, options)
+    this.trash = []
   }
 
-  // 检查是否匹配
+  /** 检查是否匹配 */
   private checkArgument(target: string, include: RegExp, exclude: RegExp) {
     return include.test(target) && !exclude.test(target)
   }
-  // 计算过滤后的参数
-  private getArguments(args: IArguments) {
-    const { include, exclude, strict } = this._options
+  /** 计算过滤后的参数 */
+  private getArguments(...args: any[]) {
+    const { include, exclude, global } = this.options
     const [arg0] = args
-    if (typeof arg0 === 'string' || typeof arg0 === 'number') {
-      if (this.checkArgument(String(arg0), include!, exclude!)) {
+    if (global) {
+      if (this.checkArgument(arg0.toString(), include!, exclude!)) {
         return args
       } else {
-        this._trash.push(args)
+        this.moveToTrash(args)
         return []
       }
     } else {
-      if (strict) {
-        this._trash.push(args)
-        return []
-      } else {
+      const isMatch = args.every(arg => this.checkArgument(arg.toString(), include!, exclude!))
+      if (isMatch) {
         return args
+      } else {
+        this.moveToTrash(args)
+        return []
       }
     }
   }
-  // 过滤函数
+  /** 过滤函数 */
   public filter(options: Options) {
-    this._options = Object.assign({}, this._options, options)
-    const { methods = [] } = this._options
+    this.options = Object.assign({}, this.options, options)
+    const { methods = [] } = this.options
     const availableMethods: Method[] = methods.length === 0 ? DefaultAvailableMethods : methods
 
     DefaultAvailableMethods.forEach(method => {
       if (availableMethods.includes(method)) {
-        window.console[method].prototype = () => {
-          this._console[method].apply(this._console, this.getArguments(arguments) as Arguments);
-        };
+        window.console[method].apply(window.console[method], this.getArguments(arguments) as Arguments)
       } else {
-        window.console[method] = () => { }
+        window.console[method] = (...args) => {
+          this.moveToTrash(args)
+        }
       }
     })
   }
@@ -83,11 +84,17 @@ class MyConsole {
   }
   /** 查看过滤掉的log */
   public getTrash() {
-    return this._trash
+    return this.trash
+  }
+  /** 添加回收站的log */
+  public moveToTrash(...args: any[]) {
+    this.trash.push({
+      [new Date().getTime()]: args
+    })
   }
   /** 清空回收站的log */
   public clearTrash() {
-    this._trash = []
+    this.trash = []
   }
 }
 
